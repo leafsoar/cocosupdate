@@ -72,7 +72,6 @@ func GetVersions(root string) []Version {
 			Path: path,
 		}
 		version.initFiles()
-		log.Println(version.Items)
 		slice = append(slice, version)
 		return nil
 	})
@@ -80,11 +79,12 @@ func GetVersions(root string) []Version {
 }
 
 func main() {
-	log.Println("leafsoar v5 ~")
+	// log.Println("leafsoar v5 ~")
 
 	// 获取所有的版本
-	list := GetVersions("assets")
-	log.Println(list)
+	// list := GetVersions("assets")
+	// log.Println(list)
+	TestJSON()
 }
 
 func checkErr(err error) {
