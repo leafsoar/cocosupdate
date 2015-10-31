@@ -33,6 +33,12 @@ func TestMain(t *testing.T) {
 	mf.AddSearchPath("res")
 	mf.AddSearchPath("src")
 
-	con, _ := mf.Marshal()
+	// 返回简短描述
+	con, _ := mf.MarshalMini()
 	fmt.Println(string(con))
+
+	// 返回详细描述
+	con, _ = mf.Marshal()
+	fmt.Println(string(con))
+
 }

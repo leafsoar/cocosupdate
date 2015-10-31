@@ -12,20 +12,25 @@ import (
 	"strings"
 )
 
-// Manifest 资源描述文件
-type manifest struct {
+// 更新基础配置
+type base struct {
 	PackageURL        string            `json:"packageUrl"`
 	RemoteManifestURL string            `json:"remoteManifestUrl"`
 	RemoteVersionURL  string            `json:"remoteVersionUrl"`
 	Version           string            `json:"version"`
 	GroupVersions     map[string]string `json:"groupVersions"`
 	EngineVersion     string            `json:"engineVersion"`
-	Assets            map[string]Asset  `json:"assets"`
-	SearchPaths       []string          `json:"searchPaths"`
+}
+
+// Manifest 资源详细描述文件
+type manifest struct {
+	base                         // 嵌入基本配置
+	Assets      map[string]asset `json:"assets"`
+	SearchPaths []string         `json:"searchPaths"`
 }
 
 // Asset 资源
-type Asset struct {
+type asset struct {
 	Path       string `json:"path"`
 	MD5        string `json:"md5"`
 	Compressed bool   `json:"compressed"`
@@ -43,7 +48,7 @@ func NewManifest() *Manifest {
 	mf := Manifest{}
 	mf.mf = &manifest{}
 	mf.mf.GroupVersions = map[string]string{}
-	mf.mf.Assets = map[string]Asset{}
+	mf.mf.Assets = map[string]asset{}
 	mf.mf.SearchPaths = []string{}
 	return &mf
 }
@@ -74,7 +79,7 @@ func (m *Manifest) SetEngineVersion(version string) {
 // AddAsset 添加普通资源，默认添加到当前组
 func (m *Manifest) AddAsset(name string, path string, md5 string) {
 	// TODO: 根据后缀名称判断是否为压缩资源
-	m.mf.Assets[name] = Asset{
+	m.mf.Assets[name] = asset{
 		Path:       path,
 		MD5:        md5,
 		Compressed: strings.Index(path, ".zip") >= 0,
@@ -90,4 +95,13 @@ func (m *Manifest) AddSearchPath(path string) {
 // Marshal 返回字符串
 func (m *Manifest) Marshal() ([]byte, error) {
 	return json.MarshalIndent(m.mf, "", "  ")
+}
+
+func (b *base) marshal() ([]byte, error) {
+	return json.MarshalIndent(b, "", "  ")
+}
+
+// MarshalMini 返回简单描述字符串
+func (m *Manifest) MarshalMini() ([]byte, error) {
+	return m.mf.marshal()
 }
