@@ -7,7 +7,10 @@
 
 package manifest
 
-import "log"
+import (
+	"encoding/json"
+	"strings"
+)
 
 // Manifest 资源描述文件
 type manifest struct {
@@ -21,9 +24,28 @@ type manifest struct {
 	SearchPaths       []string          `json:"searchPaths"`
 }
 
+// Asset 资源
+type Asset struct {
+	Path       string `json:"path"`
+	MD5        string `json:"md5"`
+	Compressed bool   `json:"compressed"`
+	Group      string `json:"group"`
+}
+
 // Manifest 配置
 type Manifest struct {
-	mf *manifest
+	mf       *manifest // 配置原文件
+	curGroup string    // 当前资源组
+}
+
+// NewManifest 创建一个新的 Manifest
+func NewManifest() *Manifest {
+	mf := Manifest{}
+	mf.mf = &manifest{}
+	mf.mf.GroupVersions = map[string]string{}
+	mf.mf.Assets = map[string]Asset{}
+	mf.mf.SearchPaths = []string{}
+	return &mf
 }
 
 // SetURL 设置路径
@@ -33,39 +55,39 @@ func (m *Manifest) SetURL(url string) {
 	m.mf.RemoteVersionURL = url + "/version.manifest"
 }
 
-// Asset 资源
-type Asset struct {
-	Path       string `json:"path"`
-	MD5        string `json:"md5"`
-	Compressed bool   `json:"compressed"`
-	Group      string `json:"group"`
+// SetVersion 设置版本
+func (m *Manifest) SetVersion(version string) {
+	m.mf.Version = version
 }
 
-// TestJSON 测试 json
-func TestJSON() {
-	log.Println("leafsoar")
+// AddGroupVersion 添加版本组
+func (m *Manifest) AddGroupVersion(num string, version string) {
+	m.mf.GroupVersions[num] = version
+	m.curGroup = num
+}
 
-	// mf := Manifest{}
-	// mf.SetURL("http://192.168.1.50/res")
-	// mf.Version = "1.0.0"
-	// mf.GroupVersions = map[string]string{
-	// 	"1": "1.0.1",
-	// 	"2": "1.0.1",
-	// }
-	// mf.EngineVersion = "3.7.1"
-	// mf.SearchPaths = []string{}
+// SetEngineVersion 设置引擎版本
+func (m *Manifest) SetEngineVersion(version string) {
+	m.mf.EngineVersion = version
+}
 
-	// // assets
-	// assets := map[string]Asset{}
-	// assets["update1"] = Asset{
-	// 	Path:       "src/app.zip",
-	// 	MD5:        "lskjdklfjlsjdfl",
-	// 	Compressed: true,
-	// 	Group:      "1",
-	// }
+// AddAsset 添加普通资源，默认添加到当前组
+func (m *Manifest) AddAsset(name string, path string, md5 string) {
+	// TODO: 根据后缀名称判断是否为压缩资源
+	m.mf.Assets[name] = Asset{
+		Path:       path,
+		MD5:        md5,
+		Compressed: strings.Index(path, ".zip") >= 0,
+		Group:      m.curGroup,
+	}
+}
 
-	// mf.Assets = assets
+// AddSearchPath 添加搜索路径
+func (m *Manifest) AddSearchPath(path string) {
+	m.mf.SearchPaths = append(m.mf.SearchPaths, path)
+}
 
-	// con, _ := json.MarshalIndent(mf, "", "  ")
-	// log.Println(string(con))
+// Marshal 返回字符串
+func (m *Manifest) Marshal() ([]byte, error) {
+	return json.MarshalIndent(m.mf, "", "  ")
 }
