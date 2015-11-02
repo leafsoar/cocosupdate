@@ -9,6 +9,7 @@ package manifest
 
 import (
 	"encoding/json"
+	"strconv"
 	"strings"
 )
 
@@ -66,7 +67,9 @@ func (m *Manifest) SetVersion(version string) {
 }
 
 // AddGroupVersion 添加版本组
-func (m *Manifest) AddGroupVersion(num string, version string) {
+func (m *Manifest) AddGroupVersion(version string) {
+	// 算出新的组号
+	num := strconv.Itoa(len(m.mf.GroupVersions) + 1)
 	m.mf.GroupVersions[num] = version
 	m.curGroup = num
 }
@@ -77,8 +80,9 @@ func (m *Manifest) SetEngineVersion(version string) {
 }
 
 // AddAsset 添加普通资源，默认添加到当前组
-func (m *Manifest) AddAsset(name string, path string, md5 string) {
-	// TODO: 根据后缀名称判断是否为压缩资源
+func (m *Manifest) AddAsset(path string, md5 string) {
+	// name 名字不能相同
+	name := "asset" + strconv.Itoa(len(m.mf.Assets)+1)
 	m.mf.Assets[name] = asset{
 		Path:       path,
 		MD5:        md5,
