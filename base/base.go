@@ -6,6 +6,10 @@
 package base
 
 import (
+	"crypto/md5"
+	"encoding/hex"
+	"io"
+	"io/ioutil"
 	"os"
 	fp "path/filepath"
 	"strings"
@@ -13,8 +17,8 @@ import (
 
 // ResItem 资源项
 type ResItem struct {
-	name string
-	path string
+	Name string
+	Path string
 }
 
 // ResItems 资源集合
@@ -24,7 +28,7 @@ type ResItems []ResItem
 func (r ResItems) FilterRemove(name string) ResItems {
 	ret := make(ResItems, 0)
 	for _, item := range r {
-		if !strings.Contains(item.path, name) {
+		if !strings.Contains(item.Path, name) {
 			ret = append(ret, item)
 		}
 	}
@@ -39,11 +43,39 @@ func GetFiles(root string) ResItems {
 			return nil
 		}
 		res := ResItem{
-			name: f.Name(),
-			path: path,
+			Name: f.Name(),
+			Path: path,
 		}
 		ret = append(ret, res)
 		return nil
 	})
 	return ret
+}
+
+// GetFileMD5 获取一个文件的 MD5 值
+func GetFileMD5(path string) (string, error) {
+	file, err := os.Open(path)
+	defer file.Close()
+	if err != nil {
+		return "", err
+	}
+	md5h := md5.New()
+	io.Copy(md5h, file)
+	md5v := hex.EncodeToString(md5h.Sum(nil))
+	return md5v, nil
+}
+
+// GetSubPaths 获取一个目录下的目录，不包括子目录
+func GetSubPaths(root string) []string {
+	var slice []string
+	list, err := ioutil.ReadDir(root)
+	if err != nil {
+		return slice
+	}
+	for _, item := range list {
+		if item.IsDir() {
+			slice = append(slice, item.Name())
+		}
+	}
+	return slice
 }

@@ -14,5 +14,9 @@ func TestBase(t *testing.T) {
 	fmt.Println("leafsoar v5 ~")
 	files := GetFiles("../assets").
 		FilterRemove(".DS_Store")
-	fmt.Println(files)
+
+	for _, item := range files {
+		fmt.Println(item.Path)
+	}
+	// fmt.Println(files)
 }

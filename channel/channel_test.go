@@ -10,10 +10,11 @@ import (
 	"testing"
 )
 
-func TestChannel(t *testing.T) {
+func TestMain(t *testing.T) {
 	fmt.Println("leafsoar v5 ~")
 	// 建立一个渠道更新 (渠道名称，渠道资源目录)
-	channel := NewChannel("default", "assets")
+	channel := NewChannel("default", "../assets")
+	channel.InitVersions()
+	// fmt.Println(channel)
 
-	fmt.Println(channel)
 }

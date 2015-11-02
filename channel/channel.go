@@ -5,6 +5,12 @@
 
 package channel
 
+import (
+	"fmt"
+
+	"github.com/leafsoar/cocosupdate/base"
+)
+
 // Channel 渠道相关数据
 type Channel struct {
 	name string // 渠道名称
@@ -17,4 +23,10 @@ func NewChannel(name string, path string) *Channel {
 		name: name,
 		path: path,
 	}
+}
+
+// InitVersions 初始化版本
+func (c *Channel) InitVersions() {
+	paths := base.GetSubPaths(c.path)
+	fmt.Println(paths)
 }
