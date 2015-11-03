@@ -8,9 +8,11 @@ package base
 import (
 	"crypto/md5"
 	"encoding/hex"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"os"
+	"path"
 	fp "path/filepath"
 	"strings"
 )
@@ -78,4 +80,28 @@ func GetSubPaths(root string) []string {
 		}
 	}
 	return slice
+}
+
+// CopyFile 复制文件
+func CopyFile(srcName, dstName string) {
+	dstpath := path.Dir(dstName)
+	_, err := os.Stat(dstpath)
+	if os.IsNotExist(err) {
+		os.MkdirAll(dstpath, os.ModePerm)
+	}
+
+	src, err := os.Open(srcName)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer src.Close()
+
+	dst, err := os.OpenFile(dstName, os.O_WRONLY|os.O_CREATE, 0644)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer dst.Close()
+	io.Copy(dst, src)
 }

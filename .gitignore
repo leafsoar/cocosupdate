@@ -2,3 +2,4 @@ assets
 run
 manifest.test
 *.test
+channel/

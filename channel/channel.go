@@ -7,6 +7,7 @@ package channel
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/leafsoar/cocosupdate/base"
 	"github.com/leafsoar/cocosupdate/manifest"
@@ -43,11 +44,13 @@ func (c *Channel) Publish() {
 		fmt.Println("没有要发布的资源")
 		return
 	}
+	checkPublishDir(c.name)
 	src := c.versions[0]
 
 	mf := manifest.NewManifest()
 	// 基本设置
-	mf.SetURL("http://localhost:8080/default")
+	host := "http://localhost:8080"
+	mf.SetURL(host + "/" + c.name)
 	mf.SetVersion(src.name)
 	mf.SetEngineVersion("3.7.1")
 
@@ -57,11 +60,31 @@ func (c *Channel) Publish() {
 		// 对比两个版本，进行发布
 		// fmt.Println(i)
 		items := addGroupAssets(mf, tar, filter)
-		filter = filter.Merge(items)
+		// 移动变更的文件
+		c.moveFiles(tar, &items)
+		filter = append(filter, items...)
 	}
 
-	con, _ := mf.Marshal()
-	fmt.Println(string(con))
+	// con, _ := mf.Marshal()
+	// fmt.Println(string(con))
+}
+
+func (c *Channel) moveFiles(version Version, items *Items) {
+	for _, item := range *items {
+		src := version.path + "/" + item.Name
+		dst := "publish/" + c.name + "/" + item.Name
+		// fmt.Println(src, dst)
+		base.CopyFile(src, dst)
+	}
+}
+
+// 检测发布目录
+func checkPublishDir(channel string) {
+	path := "publish/" + channel
+	_, err := os.Stat(path)
+	if os.IsNotExist(err) {
+		os.MkdirAll(path, os.ModePerm)
+	}
 }
 
 // 添加组资源

@@ -54,14 +54,6 @@ func (items Items) Filter(filter Items) Items {
 	return slice
 }
 
-// Merge 合并
-func (items Items) Merge(app Items) Items {
-	var slice = make(Items, len(items)+len(app))
-	copy(slice, items)
-	copy(slice[len(items):], app)
-	return slice
-}
-
 // NewVersion 创建一个版本
 func NewVersion(name string, path string) Version {
 	v := Version{
