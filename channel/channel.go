@@ -18,14 +18,16 @@ import (
 type Channel struct {
 	name     string    // 渠道名称
 	path     string    // 路径
+	pubpath  string    // 发布路径
 	versions []Version // 每个渠道有多个版本的资源
 }
 
 // NewChannel 建立一个新渠道
 func NewChannel(name string, path string, pubpath string) *Channel {
 	return &Channel{
-		name: name,
-		path: path,
+		name:    name,
+		path:    path,
+		pubpath: pubpath,
 	}
 }
 
@@ -40,7 +42,7 @@ func (c *Channel) InitVersions() {
 }
 
 // Publish 发布资源
-func (c *Channel) Publish() {
+func (c *Channel) Publish(host string) {
 	if len(c.versions) <= 1 {
 		fmt.Println("没有要发布的资源")
 		return
@@ -50,7 +52,6 @@ func (c *Channel) Publish() {
 
 	mf := manifest.NewManifest()
 	// 基本设置
-	host := "http://localhost:8000"
 	mf.SetURL(host + "/" + c.name)
 	mf.SetVersion(src.name)
 	mf.SetEngineVersion("3.7.1")
@@ -66,17 +67,18 @@ func (c *Channel) Publish() {
 		filter = append(filter, items...)
 	}
 
+	path := c.pubpath + "/" + c.name + "/"
 	con, _ := mf.MarshalMini()
-	ioutil.WriteFile("publish/default/version.manifest", con, 0644)
+	ioutil.WriteFile(path+"version.manifest", con, 0644)
 	// fmt.Println(string(con))
 	con, _ = mf.Marshal()
-	ioutil.WriteFile("publish/default/project.manifest", con, 0644)
+	ioutil.WriteFile(path+"project.manifest", con, 0644)
 }
 
 func (c *Channel) moveFiles(version Version, items *Items) {
 	for _, item := range *items {
 		src := version.path + "/" + item.Name
-		dst := "publish/" + c.name + "/" + item.Name
+		dst := c.pubpath + "/" + c.name + "/" + item.Name
 		// fmt.Println(src, dst)
 		base.CopyFile(src, dst)
 	}
