@@ -40,8 +40,9 @@ type asset struct {
 
 // Manifest 配置
 type Manifest struct {
-	mf       *manifest // 配置原文件
-	curGroup string    // 当前资源组
+	mf        *manifest // 配置原文件
+	curGroup  string    // 当前资源组
+	fileIndex int       // 当前文件编号
 }
 
 // NewManifest 创建一个新的 Manifest
@@ -81,14 +82,31 @@ func (m *Manifest) SetEngineVersion(version string) {
 
 // AddAsset 添加普通资源，默认添加到当前组
 func (m *Manifest) AddAsset(path string, md5 string) {
+	exis, key := m.FindAsset(path)
+	// 如果有老版本的文件，则删除
+	if exis {
+		delete(m.mf.Assets, key)
+	}
 	// name 名字不能相同
-	name := "asset" + strconv.Itoa(len(m.mf.Assets)+1)
+	m.fileIndex = m.fileIndex + 1
+	name := "asset" + strconv.Itoa(m.fileIndex)
 	m.mf.Assets[name] = asset{
 		Path:       path,
 		MD5:        md5,
 		Compressed: strings.Index(path, ".zip") >= 0,
 		Group:      m.curGroup,
 	}
+}
+
+// FindAsset 查找一个资源是否存在
+func (m *Manifest) FindAsset(path string) (bool, string) {
+	// map 遍历
+	for k, v := range m.mf.Assets {
+		if v.Path == path {
+			return true, k
+		}
+	}
+	return false, ""
 }
 
 // AddSearchPath 添加搜索路径

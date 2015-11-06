@@ -5,13 +5,16 @@
 
 package main
 
-import "log"
+import (
+	"log"
+
+	"github.com/leafsoar/cocosupdate/channel"
+)
 
 func main() {
 	log.Println("leafsoar v5 ~")
 
-	// 获取所有的版本
-	// list := GetVersions("assets")
-	// log.Println(list)
-	// TestJSON()
+	ch := channel.NewChannel("default", "assets", "publish")
+	ch.InitVersions()
+	ch.Publish()
 }

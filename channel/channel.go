@@ -7,6 +7,7 @@ package channel
 
 import (
 	"fmt"
+	"io/ioutil"
 	"os"
 
 	"github.com/leafsoar/cocosupdate/base"
@@ -21,7 +22,7 @@ type Channel struct {
 }
 
 // NewChannel 建立一个新渠道
-func NewChannel(name string, path string) *Channel {
+func NewChannel(name string, path string, pubpath string) *Channel {
 	return &Channel{
 		name: name,
 		path: path,
@@ -49,7 +50,7 @@ func (c *Channel) Publish() {
 
 	mf := manifest.NewManifest()
 	// 基本设置
-	host := "http://localhost:8080"
+	host := "http://localhost:8000"
 	mf.SetURL(host + "/" + c.name)
 	mf.SetVersion(src.name)
 	mf.SetEngineVersion("3.7.1")
@@ -65,8 +66,11 @@ func (c *Channel) Publish() {
 		filter = append(filter, items...)
 	}
 
-	// con, _ := mf.Marshal()
+	con, _ := mf.MarshalMini()
+	ioutil.WriteFile("publish/default/version.manifest", con, 0644)
 	// fmt.Println(string(con))
+	con, _ = mf.Marshal()
+	ioutil.WriteFile("publish/default/project.manifest", con, 0644)
 }
 
 func (c *Channel) moveFiles(version Version, items *Items) {
