@@ -8,7 +8,6 @@ package channel
 import (
 	"fmt"
 	"io/ioutil"
-	"os"
 
 	"github.com/leafsoar/cocosupdate/base"
 	"github.com/leafsoar/cocosupdate/manifest"
@@ -41,13 +40,35 @@ func (c *Channel) InitVersions() {
 	// fmt.Println(c.versions)
 }
 
+// InitChange 处理变化
+func (c *Channel) InitChange() {
+	// 获取所有的版本变化
+	if len(c.versions) <= 1 {
+		fmt.Println("没有要发布的资源")
+		return
+	}
+	changes := []Change{}
+	// 设置源版本
+	vsrc := c.versions[0]
+	// 变化从 1 索引开始，0 对比 1
+	for i := 1; i < len(c.versions); i++ {
+		// 目标版本
+		vtar := c.versions[i]
+		chg := NewChange(c.name, vsrc, vtar)
+		chg.ArchiveZip(c.pubpath)
+		changes = append(changes, chg)
+		vsrc = vtar
+	}
+}
+
 // Publish 发布资源
 func (c *Channel) Publish(host string) {
 	if len(c.versions) <= 1 {
 		fmt.Println("没有要发布的资源")
 		return
 	}
-	checkPublishDir(c.name)
+	base.CheckOrCreateDir(c.pubpath + "/" + c.name)
+
 	src := c.versions[0]
 
 	mf := manifest.NewManifest()
@@ -81,15 +102,6 @@ func (c *Channel) moveFiles(version Version, items *Items) {
 		dst := c.pubpath + "/" + c.name + "/" + item.Name
 		// fmt.Println(src, dst)
 		base.CopyFile(src, dst)
-	}
-}
-
-// 检测发布目录
-func checkPublishDir(channel string) {
-	path := "publish/" + channel
-	_, err := os.Stat(path)
-	if os.IsNotExist(err) {
-		os.MkdirAll(path, os.ModePerm)
 	}
 }
 

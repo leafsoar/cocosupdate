@@ -13,7 +13,8 @@ import (
 func TestMain(t *testing.T) {
 	fmt.Println("leafsoar v5 ~")
 	// 建立一个渠道更新 (渠道名称，渠道资源目录)
-	channel := NewChannel("default", "../assets", "publish")
+	channel := NewChannel("baidu", "../assets", "publish")
 	channel.InitVersions()
-	channel.Publish()
+	// channel.Publish("http://192.168.1.51:8001")
+	channel.InitChange()
 }

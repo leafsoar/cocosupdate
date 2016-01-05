@@ -6,6 +6,7 @@
 package base
 
 import (
+	"archive/zip"
 	"crypto/md5"
 	"encoding/hex"
 	"fmt"
@@ -104,4 +105,46 @@ func CopyFile(srcName, dstName string) {
 	}
 	defer dst.Close()
 	io.Copy(dst, src)
+}
+
+// CheckOrCreateDir 检测目录是否存在，不存在则创建
+func CheckOrCreateDir(path string) {
+	_, err := os.Stat(path)
+	if os.IsNotExist(err) {
+		os.MkdirAll(path, os.ModePerm)
+	}
+}
+
+// ArchiveZip 压缩文件
+func ArchiveZip(name, path string) {
+	File, _ := os.Create(name)
+	PS := strings.Split(path, "\\")
+	PathName := strings.Join(PS[:len(PS)-1], "\\")
+	os.Chdir(PathName)
+	path = PS[len(PS)-1]
+	defer File.Close()
+	Zip := zip.NewWriter(File)
+	defer Zip.Close()
+	walk := func(Path string, info os.FileInfo, err error) error {
+		if err != nil {
+			fmt.Println(err)
+			return err
+		}
+		if info.IsDir() {
+			return nil
+		}
+		Src, _ := os.Open(Path)
+		defer Src.Close()
+		inpath := strings.Replace(Path, path, "", 1)
+		// fmt.Println(inpath)
+		//FileName, _ := Zip.Create(Path)
+		h := &zip.FileHeader{Name: inpath, Method: zip.Deflate, Flags: 0x800}
+		FileName, _ := Zip.CreateHeader(h)
+		io.Copy(FileName, Src)
+		Zip.Flush()
+		return nil
+	}
+	if err := fp.Walk(path, walk); err != nil {
+		fmt.Println(err)
+	}
 }
