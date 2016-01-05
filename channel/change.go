@@ -7,7 +7,11 @@
 
 package channel
 
-import "github.com/leafsoar/cocosupdate/base"
+import (
+	"os"
+
+	"github.com/leafsoar/cocosupdate/base"
+)
 
 // Change 版本变化
 type Change struct {
@@ -29,13 +33,13 @@ func NewChange(name string, vsrc, vtar Version) Change {
 
 // ArchiveZip 打包资源
 func (c *Change) ArchiveZip(pubpath string) string {
+	base.CheckOrCreateDir(pubpath + "/" + c.name)
 	zippath := pubpath + "/" + c.name + "/" + c.chname + ".zip"
 	temppath, delpath := c.moveToTemp(pubpath)
 	base.ArchiveZip(zippath, temppath)
 	// 删除临时目录
-	// os.RemoveAll(delpath)
-	_ = delpath
-	return zippath
+	os.RemoveAll(delpath)
+	return c.chname + ".zip"
 }
 
 // MoveToTemp 移动到临时目录

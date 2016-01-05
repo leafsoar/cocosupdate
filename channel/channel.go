@@ -40,27 +40,6 @@ func (c *Channel) InitVersions() {
 	// fmt.Println(c.versions)
 }
 
-// InitChange 处理变化
-func (c *Channel) InitChange() {
-	// 获取所有的版本变化
-	if len(c.versions) <= 1 {
-		fmt.Println("没有要发布的资源")
-		return
-	}
-	changes := []Change{}
-	// 设置源版本
-	vsrc := c.versions[0]
-	// 变化从 1 索引开始，0 对比 1
-	for i := 1; i < len(c.versions); i++ {
-		// 目标版本
-		vtar := c.versions[i]
-		chg := NewChange(c.name, vsrc, vtar)
-		chg.ArchiveZip(c.pubpath)
-		changes = append(changes, chg)
-		vsrc = vtar
-	}
-}
-
 // Publish 发布资源
 func (c *Channel) Publish(host string) {
 	if len(c.versions) <= 1 {
@@ -77,15 +56,20 @@ func (c *Channel) Publish(host string) {
 	mf.SetVersion(src.name)
 	mf.SetEngineVersion("3.7.1")
 
-	filter := src.items
+	// 设置源版本
+	vsrc := c.versions[0]
+	// 变化从 1 索引开始，0 对比 1
 	for i := 1; i < len(c.versions); i++ {
-		tar := c.versions[i]
-		// 对比两个版本，进行发布
-		// fmt.Println(i)
-		items := addGroupAssets(mf, tar, filter)
-		// 移动变更的文件
-		c.moveFiles(tar, &items)
-		filter = append(filter, items...)
+		// 目标版本
+		vtar := c.versions[i]
+		chg := NewChange(c.name, vsrc, vtar)
+		zipfile := chg.ArchiveZip(c.pubpath)
+
+		mf.AddGroupVersion(vtar.name)
+		md5, _ := base.GetFileMD5(zipfile)
+		mf.AddAsset(zipfile, md5)
+
+		vsrc = vtar
 	}
 
 	path := c.pubpath + "/" + c.name + "/"
@@ -103,14 +87,4 @@ func (c *Channel) moveFiles(version Version, items *Items) {
 		// fmt.Println(src, dst)
 		base.CopyFile(src, dst)
 	}
-}
-
-// 添加组资源
-func addGroupAssets(mf *manifest.Manifest, tar Version, filter Items) Items {
-	mf.AddGroupVersion(tar.name)
-	items := tar.items.Filter(filter)
-	for _, item := range items {
-		mf.AddAsset(item.Name, item.MD5)
-	}
-	return items
 }
