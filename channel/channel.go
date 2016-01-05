@@ -9,8 +9,8 @@ import (
 	"fmt"
 	"io/ioutil"
 
-	"github.com/leafsoar/cocosupdate/base"
 	"github.com/leafsoar/cocosupdate/manifest"
+	"github.com/leafsoar/cocosupdate/util"
 )
 
 // Channel 渠道相关数据
@@ -32,7 +32,7 @@ func NewChannel(name string, path string, pubpath string) *Channel {
 
 // InitVersions 初始化版本
 func (c *Channel) InitVersions() {
-	paths := base.GetSubPaths(c.path)
+	paths := util.GetSubPaths(c.path)
 	// 添加版本
 	for _, name := range paths {
 		c.versions = append(c.versions, NewVersion(name, c.path+"/"+name))
@@ -47,7 +47,7 @@ func (c *Channel) Publish(host string) {
 		return
 	}
 	channelpath := c.pubpath + "/" + c.name
-	base.CheckOrCreateDir(channelpath)
+	util.CheckOrCreateDir(channelpath)
 
 	src := c.versions[0]
 
@@ -67,7 +67,7 @@ func (c *Channel) Publish(host string) {
 		zipfile := chg.ArchiveZip(c.pubpath)
 
 		mf.AddGroupVersion(vtar.name)
-		md5, _ := base.GetFileMD5(channelpath + "/" + zipfile)
+		md5, _ := util.GetFileMD5(channelpath + "/" + zipfile)
 		mf.AddAsset(zipfile, md5)
 
 		vsrc = vtar
@@ -79,13 +79,4 @@ func (c *Channel) Publish(host string) {
 	// fmt.Println(string(con))
 	con, _ = mf.Marshal()
 	ioutil.WriteFile(path+"project.manifest", con, 0644)
-}
-
-func (c *Channel) moveFiles(version Version, items *Items) {
-	for _, item := range *items {
-		src := version.path + "/" + item.Name
-		dst := c.pubpath + "/" + c.name + "/" + item.Name
-		// fmt.Println(src, dst)
-		base.CopyFile(src, dst)
-	}
 }

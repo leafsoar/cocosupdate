@@ -3,7 +3,7 @@
 // Date: 2015-11-02 10:15:40
 //
 
-package base
+package util
 
 import (
 	"fmt"

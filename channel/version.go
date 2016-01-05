@@ -10,7 +10,7 @@ import (
 	fp "path/filepath"
 	"strings"
 
-	"github.com/leafsoar/cocosupdate/base"
+	"github.com/leafsoar/cocosupdate/util"
 )
 
 // Author: leafsoar
@@ -44,7 +44,7 @@ func (items Items) isContains(item Item) bool {
 }
 
 // Filter 过滤
-func (items Items) Filter(filter Items) Items {
+func (items Items) filter(filter Items) Items {
 	var slice = make(Items, 0)
 	for _, item := range items {
 		if !filter.isContains(item) {
@@ -71,11 +71,16 @@ func (v *Version) initFiles() {
 			return nil
 		}
 		name := strings.Replace(path, v.path+"/", "", 1)
-		md5, _ := base.GetFileMD5(path)
+		md5, _ := util.GetFileMD5(path)
 		v.items = append(v.items, Item{
 			Name: name,
 			MD5:  md5,
 		})
 		return nil
 	})
+}
+
+// CompareFilter 对比忽略文件
+func (v *Version) CompareFilter(srcv *Version) Items {
+	return v.items.filter(srcv.items)
 }

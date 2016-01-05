@@ -10,7 +10,7 @@ package channel
 import (
 	"os"
 
-	"github.com/leafsoar/cocosupdate/base"
+	"github.com/leafsoar/cocosupdate/util"
 )
 
 // Change 版本变化
@@ -33,10 +33,10 @@ func NewChange(name string, vsrc, vtar Version) Change {
 
 // ArchiveZip 打包资源
 func (c *Change) ArchiveZip(pubpath string) string {
-	base.CheckOrCreateDir(pubpath + "/" + c.name)
+	util.CheckOrCreateDir(pubpath + "/" + c.name)
 	temppath, delpath := c.moveToTemp(pubpath)
 	zippath := pubpath + "/" + c.name + "/" + c.chname + ".zip"
-	base.ArchiveZip(zippath, temppath)
+	util.ArchiveZip(zippath, temppath)
 	// 删除临时目录
 	os.RemoveAll(delpath)
 	_ = delpath
@@ -46,19 +46,15 @@ func (c *Change) ArchiveZip(pubpath string) string {
 // MoveToTemp 移动到临时目录
 func (c *Change) moveToTemp(pubpath string) (string, string) {
 	temppath := pubpath + "/" + c.name + "_temp/" + c.chname
-	base.CheckOrCreateDir(temppath)
+	util.CheckOrCreateDir(temppath)
 
-	items := c.getChangeFiles()
+	// 获取变化的文件
+	items := c.vtar.CompareFilter(&c.vsrc)
 	for _, item := range items {
 		src := c.vtar.path + "/" + item.Name
 		dst := temppath + "/" + item.Name
-		base.CopyFile(src, dst)
+		util.CopyFile(src, dst)
 	}
 	delpath := pubpath + "/" + c.name + "_temp"
 	return temppath, delpath
-}
-
-// GetChangeFiles 获取变化文件
-func (c *Change) getChangeFiles() Items {
-	return c.vtar.items.Filter(c.vsrc.items)
 }
