@@ -136,7 +136,7 @@ func ArchiveZip(name, path string) {
 		}
 		if info.IsDir() {
 			// 如果是目录也需要写入
-			h := &zip.FileHeader{Name: inpath, Method: zip.Deflate, Flags: 0x800}
+			h := &zip.FileHeader{Name: inpath + "/", Method: zip.Deflate, Flags: 0x800}
 			h.SetMode(0755 | os.ModeDir)
 			Zip.CreateHeader(h)
 
