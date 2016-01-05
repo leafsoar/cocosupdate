@@ -131,6 +131,11 @@ func ArchiveZip(name, path string) {
 			return err
 		}
 		if info.IsDir() {
+			// 如果是目录也需要写入
+			inpath := strings.Replace(Path, path, "", 1)
+			h := &zip.FileHeader{Name: inpath, Method: zip.Deflate, Flags: 0x800}
+			Zip.CreateHeader(h)
+
 			return nil
 		}
 		Src, _ := os.Open(Path)
