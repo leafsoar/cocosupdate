@@ -130,19 +130,21 @@ func ArchiveZip(name, path string) {
 			fmt.Println(err)
 			return err
 		}
+		inpath := strings.Replace(Path, path, "", 1)
+		if strings.EqualFold(Path, path) {
+			return nil
+		}
 		if info.IsDir() {
 			// 如果是目录也需要写入
-			inpath := strings.Replace(Path, path, "", 1)
 			h := &zip.FileHeader{Name: inpath, Method: zip.Deflate, Flags: 0x800}
+			h.SetMode(0755 | os.ModeDir)
 			Zip.CreateHeader(h)
 
 			return nil
 		}
 		Src, _ := os.Open(Path)
 		defer Src.Close()
-		inpath := strings.Replace(Path, path, "", 1)
-		// fmt.Println(inpath)
-		//FileName, _ := Zip.Create(Path)
+
 		h := &zip.FileHeader{Name: inpath, Method: zip.Deflate, Flags: 0x800}
 		FileName, _ := Zip.CreateHeader(h)
 		io.Copy(FileName, Src)
