@@ -46,7 +46,8 @@ func (c *Channel) Publish(host string) {
 		fmt.Println("没有要发布的资源")
 		return
 	}
-	base.CheckOrCreateDir(c.pubpath + "/" + c.name)
+	channelpath := c.pubpath + "/" + c.name
+	base.CheckOrCreateDir(channelpath)
 
 	src := c.versions[0]
 
@@ -66,7 +67,7 @@ func (c *Channel) Publish(host string) {
 		zipfile := chg.ArchiveZip(c.pubpath)
 
 		mf.AddGroupVersion(vtar.name)
-		md5, _ := base.GetFileMD5(zipfile)
+		md5, _ := base.GetFileMD5(channelpath + "/" + zipfile)
 		mf.AddAsset(zipfile, md5)
 
 		vsrc = vtar

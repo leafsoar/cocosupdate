@@ -9,6 +9,7 @@ package channel
 
 import (
 	"os"
+	"os/exec"
 
 	"github.com/leafsoar/cocosupdate/base"
 )
@@ -34,11 +35,18 @@ func NewChange(name string, vsrc, vtar Version) Change {
 // ArchiveZip 打包资源
 func (c *Change) ArchiveZip(pubpath string) string {
 	base.CheckOrCreateDir(pubpath + "/" + c.name)
-	zippath := pubpath + "/" + c.name + "/" + c.chname + ".zip"
 	temppath, delpath := c.moveToTemp(pubpath)
-	base.ArchiveZip(zippath, temppath)
+	// zippath := pubpath + "/" + c.name + "/" + c.chname + ".zip"
+	// base.ArchiveZip(zippath, temppath)
+	// 不使用 golang 提供的 zip 工具
+	zippath := "../../" + c.name + "/" + c.chname + ".zip"
+	cmd := exec.Command("zip", "-r", zippath, ".")
+	cmd.Dir = temppath
+	cmd.Run()
+
 	// 删除临时目录
 	os.RemoveAll(delpath)
+	_ = delpath
 	return c.chname + ".zip"
 }
 
