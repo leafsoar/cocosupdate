@@ -6,6 +6,8 @@
 package version
 
 import (
+	"encoding/json"
+	"io/ioutil"
 	"os"
 	fp "path/filepath"
 	"strings"
@@ -83,8 +85,18 @@ func (v *Version) initFiles() {
 // GetEngineVersion 获取引擎版本
 func (v *Version) GetEngineVersion() string {
 	// 遍历所有文件，查看是否有 project.manifest 文件
-	for _, sitem := range v.items {
-		_ = sitem
+	for _, item := range v.items {
+		// 如果等于指定文件名
+		if strings.EqualFold("project.manifest", fp.Base(item.Name)) {
+			filename := v.Path + "/" + item.Name
+			f, _ := ioutil.ReadFile(filename)
+			var mf map[string]interface{}
+			json.Unmarshal(f, &mf)
+			engine := mf["engineVersion"]
+			if engine != nil {
+				return engine.(string)
+			}
+		}
 	}
 	return ""
 }

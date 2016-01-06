@@ -7,7 +7,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 	"os/signal"
@@ -20,23 +19,25 @@ import (
 
 // 根据源资源，生成发布资源
 func publish(address, assets, publish, name, engine string) {
+	fmt.Println("开始生成发布资源 ...")
 	fmt.Println("资源目录: ", assets)
 	fmt.Println("发布目录: ", publish)
 	fmt.Println("发布地址: ", address)
 	fmt.Println("发布名称: ", name)
 	ch := channel.NewChannel(name, assets, publish)
 	pubengine := ch.InitVersions()
-	if strings.EqualFold(pubengine, "") {
+	// 如果传入引擎版本不等于 3.7.1，使用强制赋值
+	if !strings.EqualFold(engine, "3.7.1") {
 		pubengine = engine
 	}
 	// 发布
 	ch.Publish("http://"+address, pubengine)
 	fmt.Println("引擎版本: ", pubengine)
-	fmt.Printf("发布完成: http://%s/%s\n", address, name)
+	fmt.Printf("发布完成:  http://%s/%s\n", address, name)
 }
 
 func startServer(port string, publish string) {
-	log.Printf("启动 Http 服务 path: %s port: %s...", publish, port)
+	fmt.Printf("启动 Http 服务 path: %s port: %s...", publish, port)
 
 	http.Handle("/", http.FileServer(http.Dir(publish)))
 	err := http.ListenAndServe(":"+port, nil)
@@ -92,7 +93,6 @@ func main() {
 				},
 			},
 			Action: func(c *cli.Context) {
-				fmt.Println("开始生成发布资源 ...")
 				publish(
 					c.String("address"),
 					c.String("assets"),
