@@ -32,13 +32,11 @@ docker 运行 使用参数决定最后的发布地址
 
 <!-- 生成的说明文件 version 应该为最后一个版本，不是第一个版本 -->
 
-引擎版本可配置
+引擎版本可配置，或者自动读取 project.manifest 文件
 
 在 cocosupdate build 生成热更新资源后
 cocosupdate start 命令应该可以修改已经发布资源的路径
 也即是修改 manifest 里面的 url， 这里应该随时可以改变的
-
-build 添加可选参数将资源自动打包成 zip，但跳过原本的 zip
 
 添加效验游戏中 project.manifest 文件版本是否与目录相一致
 

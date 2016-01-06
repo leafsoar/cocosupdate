@@ -80,6 +80,15 @@ func (v *Version) initFiles() {
 	})
 }
 
+// GetEngineVersion 获取引擎版本
+func (v *Version) GetEngineVersion() string {
+	// 遍历所有文件，查看是否有 project.manifest 文件
+	for _, sitem := range v.items {
+		_ = sitem
+	}
+	return ""
+}
+
 // CompareFilter 对比忽略文件
 func (v *Version) CompareFilter(srcv *Version) Items {
 	return v.items.filter(srcv.items)

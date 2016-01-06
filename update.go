@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strings"
 
 	"github.com/leafsoar/cocosupdate/channel"
 
@@ -18,15 +19,19 @@ import (
 )
 
 // 根据源资源，生成发布资源
-func publish(address string, assets string, publish string, name string) {
+func publish(address, assets, publish, name, engine string) {
 	fmt.Println("资源目录: ", assets)
 	fmt.Println("发布目录: ", publish)
 	fmt.Println("发布地址: ", address)
 	fmt.Println("发布名称: ", name)
 	ch := channel.NewChannel(name, assets, publish)
-	ch.InitVersions()
+	pubengine := ch.InitVersions()
+	if strings.EqualFold(pubengine, "") {
+		pubengine = engine
+	}
 	// 发布
-	ch.Publish("http://" + address)
+	ch.Publish("http://"+address, pubengine)
+	fmt.Println("引擎版本: ", pubengine)
 	fmt.Printf("发布完成: http://%s/%s\n", address, name)
 }
 
@@ -80,6 +85,11 @@ func main() {
 					Value: "res",
 					Usage: "发布名称 (区分渠道或者地址)",
 				},
+				cli.StringFlag{
+					Name:  "engine, e",
+					Value: "3.7.1",
+					Usage: "cocos 引擎版本 (不指定时自动读取 project.manifest 值 || 3.7.1)",
+				},
 			},
 			Action: func(c *cli.Context) {
 				fmt.Println("开始生成发布资源 ...")
@@ -88,8 +98,8 @@ func main() {
 					c.String("assets"),
 					c.String("publish"),
 					c.String("name"),
+					c.String("engine"),
 				)
-
 			},
 		},
 		{

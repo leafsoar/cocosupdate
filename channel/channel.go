@@ -30,18 +30,22 @@ func NewChannel(name string, path string, pubpath string) *Channel {
 	}
 }
 
-// InitVersions 初始化版本
-func (c *Channel) InitVersions() {
+// InitVersions 初始化版本 返回 引擎版本，如果有
+func (c *Channel) InitVersions() string {
 	paths := util.GetSubPaths(c.path)
 	// 添加版本
 	for _, name := range paths {
 		c.versions = append(c.versions, NewVersion(name, c.path+"/"+name))
 	}
 	// fmt.Println(c.versions)
+	if len(c.versions) > 0 {
+		return c.versions[0].GetEngineVersion()
+	}
+	return ""
 }
 
 // Publish 发布资源
-func (c *Channel) Publish(host string) {
+func (c *Channel) Publish(host, engine string) {
 	if len(c.versions) <= 1 {
 		fmt.Println("没有要发布的资源")
 		return
@@ -55,7 +59,7 @@ func (c *Channel) Publish(host string) {
 	// 基本设置
 	mf.SetURL(host + "/" + c.name)
 	mf.SetVersion(src.name)
-	mf.SetEngineVersion("3.7.1")
+	mf.SetEngineVersion(engine)
 
 	// 设置源版本
 	vsrc := c.versions[0]
