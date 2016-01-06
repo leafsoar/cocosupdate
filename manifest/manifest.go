@@ -55,6 +55,11 @@ func NewManifest() *Manifest {
 	return &mf
 }
 
+// Unmarshal 从 JSON 数据解析
+func (m *Manifest) Unmarshal(data []byte) {
+	json.Unmarshal(data, m.mf)
+}
+
 // SetURL 设置路径
 func (m *Manifest) SetURL(url string) {
 	m.mf.PackageURL = url
@@ -78,6 +83,11 @@ func (m *Manifest) AddGroupVersion(version string) {
 // SetEngineVersion 设置引擎版本
 func (m *Manifest) SetEngineVersion(version string) {
 	m.mf.EngineVersion = version
+}
+
+// GetEngineVersion 获取引擎版本
+func (m *Manifest) GetEngineVersion() string {
+	return m.mf.EngineVersion
 }
 
 // AddAsset 添加普通资源，默认添加到当前组

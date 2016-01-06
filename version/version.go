@@ -6,12 +6,12 @@
 package version
 
 import (
-	"encoding/json"
 	"io/ioutil"
 	"os"
 	fp "path/filepath"
 	"strings"
 
+	"github.com/leafsoar/cocosupdate/manifest"
 	"github.com/leafsoar/cocosupdate/util"
 )
 
@@ -90,12 +90,9 @@ func (v *Version) GetEngineVersion() string {
 		if strings.EqualFold("project.manifest", fp.Base(item.Name)) {
 			filename := v.Path + "/" + item.Name
 			f, _ := ioutil.ReadFile(filename)
-			var mf map[string]interface{}
-			json.Unmarshal(f, &mf)
-			engine := mf["engineVersion"]
-			if engine != nil {
-				return engine.(string)
-			}
+			mf := manifest.NewManifest()
+			mf.Unmarshal(f)
+			return mf.GetEngineVersion()
 		}
 	}
 	return ""
