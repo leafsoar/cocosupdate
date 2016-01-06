@@ -11,14 +11,15 @@ import (
 
 	"github.com/leafsoar/cocosupdate/manifest"
 	"github.com/leafsoar/cocosupdate/util"
+	"github.com/leafsoar/cocosupdate/version"
 )
 
 // Channel 渠道相关数据
 type Channel struct {
-	name     string    // 渠道名称
-	path     string    // 路径
-	pubpath  string    // 发布路径
-	versions []Version // 每个渠道有多个版本的资源
+	name     string            // 渠道名称
+	path     string            // 路径
+	pubpath  string            // 发布路径
+	versions []version.Version // 每个渠道有多个版本的资源
 }
 
 // NewChannel 建立一个新渠道
@@ -35,7 +36,7 @@ func (c *Channel) InitVersions() string {
 	paths := util.GetSubPaths(c.path)
 	// 添加版本
 	for _, name := range paths {
-		c.versions = append(c.versions, NewVersion(name, c.path+"/"+name))
+		c.versions = append(c.versions, version.NewVersion(name, c.path+"/"+name))
 	}
 	// fmt.Println(c.versions)
 	if len(c.versions) > 0 {
@@ -53,16 +54,15 @@ func (c *Channel) Publish(host, engine string) {
 	channelpath := c.pubpath + "/" + c.name
 	util.CheckOrCreateDir(channelpath)
 
-	src := c.versions[0]
+	// 设置源版本
+	vsrc := c.versions[0]
 
 	mf := manifest.NewManifest()
 	// 基本设置
 	mf.SetURL(host + "/" + c.name)
-	mf.SetVersion(src.name)
+	mf.SetVersion(vsrc.Name)
 	mf.SetEngineVersion(engine)
 
-	// 设置源版本
-	vsrc := c.versions[0]
 	// 变化从 1 索引开始，0 对比 1
 	for i := 1; i < len(c.versions); i++ {
 		// 目标版本
@@ -70,7 +70,7 @@ func (c *Channel) Publish(host, engine string) {
 		chg := NewChange(c.name, vsrc, vtar)
 		zipfile := chg.ArchiveZip(c.pubpath)
 
-		mf.AddGroupVersion(vtar.name)
+		mf.AddGroupVersion(vtar.Name)
 		md5, _ := util.GetFileMD5(channelpath + "/" + zipfile)
 		mf.AddAsset(zipfile, md5)
 

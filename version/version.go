@@ -3,7 +3,7 @@
 // Date: 2015-11-02 10:59:00
 //
 
-package channel
+package version
 
 import (
 	"os"
@@ -19,8 +19,8 @@ import (
 
 // Version 资源版本
 type Version struct {
-	name  string // 版本名称
-	path  string // 版本路径
+	Name  string // 版本名称
+	Path  string // 版本路径
 	items Items  // 资源文件
 }
 
@@ -57,8 +57,8 @@ func (items Items) filter(filter Items) Items {
 // NewVersion 创建一个版本
 func NewVersion(name string, path string) Version {
 	v := Version{
-		name: name,
-		path: path,
+		Name: name,
+		Path: path,
 	}
 	v.initFiles()
 	return v
@@ -66,11 +66,11 @@ func NewVersion(name string, path string) Version {
 
 // 初始化资源列表
 func (v *Version) initFiles() {
-	fp.Walk(v.path, func(path string, f os.FileInfo, err error) error {
+	fp.Walk(v.Path, func(path string, f os.FileInfo, err error) error {
 		if f.IsDir() || f.Name() == ".DS_Store" {
 			return nil
 		}
-		name := strings.Replace(path, v.path+"/", "", 1)
+		name := strings.Replace(path, v.Path+"/", "", 1)
 		md5, _ := util.GetFileMD5(path)
 		v.items = append(v.items, Item{
 			Name: name,
