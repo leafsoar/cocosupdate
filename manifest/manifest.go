@@ -99,7 +99,7 @@ func (m *Manifest) AddAsset(path string, md5 string) {
 	}
 	// name 名字不能相同
 	m.fileIndex = m.fileIndex + 1
-	name := "asset" + strconv.Itoa(m.fileIndex)
+	name := "update" + strconv.Itoa(m.fileIndex)
 	m.mf.Assets[name] = asset{
 		Path:       path,
 		MD5:        md5,
