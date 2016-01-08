@@ -1,6 +1,8 @@
 # Cocos 游戏资源热更新
 
-使用 Golang 开发的 cocos 热更新服务处理程序
+使用 Golang 开发的 cocos 热更新服务处理程序，下载地址：
+
+[![gorelease](https://dn-gorelease.qbox.me/gorelease-download-blue.svg)](https://gobuild.io/leafsoar/cocosupdate/master)
 
 ## 特性
 
@@ -108,4 +110,23 @@ project.manifest 文件内容如下：
 
 ## Docker
 
+对于熟悉 docker 的用户，还可以使用 docker 来进行操作，拉取 cocosupdate 镜像：
+
+```
+docker pull leafsoar/cocosupdate
+```
+
+在资源目录执行如下命令，将创建 publish 目录：
+
+```
+docker run --rm -v $PWD:/update leafsoar/cocosupdate build -addr 192.168.1.51:8001
+```
+
+发布资源
+
+```
+docker run --name update -d -v $PWD:/update -p 8001:8001 leafsoar/cocosupdate start -p 8001
+```
+
+在创建资源和发布的时候都需要将资源目录隐射到镜像的 /update 目录。
 
