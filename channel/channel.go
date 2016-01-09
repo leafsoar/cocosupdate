@@ -79,8 +79,8 @@ func (c *Channel) Publish(host, engine string) {
 
 	path := c.pubpath + "/" + c.name + "/"
 	con, _ := mf.MarshalMini()
-	ioutil.WriteFile(path+"version.manifest", con, 0644)
+	_ = ioutil.WriteFile(path+"version.manifest", con, 0644)
 	// fmt.Println(string(con))
 	con, _ = mf.Marshal()
-	ioutil.WriteFile(path+"project.manifest", con, 0644)
+	_ = ioutil.WriteFile(path+"project.manifest", con, 0644)
 }

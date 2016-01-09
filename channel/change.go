@@ -39,8 +39,7 @@ func (c *Change) ArchiveZip(pubpath string) string {
 	zippath := pubpath + "/" + c.name + "/" + c.chname + ".zip"
 	util.ArchiveZip(zippath, temppath)
 	// 删除临时目录
-	os.RemoveAll(delpath)
-	_ = delpath
+	_ = os.RemoveAll(delpath)
 	return c.chname + ".zip"
 }
 
@@ -50,11 +49,11 @@ func (c *Change) moveToTemp(pubpath string) (string, string) {
 	util.CheckOrCreateDir(temppath)
 
 	// 获取变化的文件
-	items := c.vtar.CompareFilter(&c.vsrc)
-	for _, item := range items {
-		src := c.vtar.Path + "/" + item.Name
+	files := c.vtar.CompareFilter(&c.vsrc)
+	for _, name := range files {
+		src := c.vtar.Path + "/" + name
 
-		dst := temppath + "/" + item.Name
+		dst := temppath + "/" + name
 		util.CopyFile(src, dst)
 	}
 	delpath := pubpath + "/" + c.name + "_temp"

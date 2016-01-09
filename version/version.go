@@ -28,8 +28,8 @@ type Version struct {
 
 // Item 资源项
 type Item struct {
-	Name string // 资源路径
-	MD5  string // md5 值
+	name string // 资源路径
+	md5  string // md5 值
 }
 
 // Items 项集合
@@ -37,8 +37,8 @@ type Items []Item
 
 func (items Items) isContains(item Item) bool {
 	for _, sitem := range items {
-		if sitem.Name == item.Name &&
-			sitem.MD5 == item.MD5 {
+		if sitem.name == item.name &&
+			sitem.md5 == item.md5 {
 			return true
 		}
 	}
@@ -75,8 +75,8 @@ func (v *Version) initFiles() {
 		name := strings.Replace(path, v.Path+"/", "", 1)
 		md5, _ := util.GetFileMD5(path)
 		v.items = append(v.items, Item{
-			Name: name,
-			MD5:  md5,
+			name: name,
+			md5:  md5,
 		})
 		return nil
 	})
@@ -87,8 +87,8 @@ func (v *Version) GetEngineVersion() string {
 	// 遍历所有文件，查看是否有 project.manifest 文件
 	for _, item := range v.items {
 		// 如果等于指定文件名
-		if strings.EqualFold("project.manifest", fp.Base(item.Name)) {
-			filename := v.Path + "/" + item.Name
+		if strings.EqualFold("project.manifest", fp.Base(item.name)) {
+			filename := v.Path + "/" + item.name
 			f, _ := ioutil.ReadFile(filename)
 			mf := manifest.NewManifest()
 			mf.Unmarshal(f)
@@ -99,6 +99,11 @@ func (v *Version) GetEngineVersion() string {
 }
 
 // CompareFilter 对比忽略文件
-func (v *Version) CompareFilter(srcv *Version) Items {
-	return v.items.filter(srcv.items)
+func (v *Version) CompareFilter(srcv *Version) []string {
+	items := v.items.filter(srcv.items)
+	rets := []string{}
+	for _, item := range items {
+		rets = append(rets, item.name)
+	}
+	return rets
 }
