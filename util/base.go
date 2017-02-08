@@ -15,7 +15,10 @@ import (
 	"os"
 	"path"
 	fp "path/filepath"
+	"sort"
 	"strings"
+
+	vsc "github.com/mcuadros/go-version"
 )
 
 // GetFileMD5 获取一个文件的 MD5 值
@@ -43,6 +46,7 @@ func GetSubPaths(root string) []string {
 			slice = append(slice, item.Name())
 		}
 	}
+	sort.Sort(VersionSlice(slice))
 	return slice
 }
 
@@ -118,4 +122,22 @@ func ArchiveZip(name, path string) {
 	if err := fp.Walk(path, walk); err != nil {
 		fmt.Println(err)
 	}
+}
+
+// VersionSlice 排序
+type VersionSlice []string
+
+// Len 长度
+func (vs VersionSlice) Len() int {
+	return len(vs)
+}
+
+// Less 大小
+func (vs VersionSlice) Less(i, j int) bool {
+	return vsc.CompareSimple(vs[i], vs[j]) < 0
+}
+
+// Swap 交换
+func (vs VersionSlice) Swap(i, j int) {
+	vs[i], vs[j] = vs[j], vs[i]
 }

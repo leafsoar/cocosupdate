@@ -7,7 +7,7 @@ package util
 
 import (
 	"fmt"
-	"strings"
+	"sort"
 	"testing"
 )
 
@@ -21,7 +21,20 @@ func TestBase(t *testing.T) {
 	// }
 	// fmt.Println(files)
 
-	path := "../assets/1.0.0/data.bin"
-	temp := strings.Replace(path, "../", "", 1)
-	fmt.Println(temp)
+	// path := "../assets/1.0.0/data.bin"
+	// temp := strings.Replace(path, "../", "", 1)
+	// fmt.Println(temp)
+
+	testVersions(t)
+}
+
+func testVersions(t *testing.T) {
+	vs := []string{
+		"1.0.13",
+		"1.0.3",
+		"1.2.1",
+		"1.3.8",
+	}
+	sort.Sort(VersionSlice(vs))
+	fmt.Println(vs)
 }

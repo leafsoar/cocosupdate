@@ -15,10 +15,6 @@ import (
 	"github.com/leafsoar/cocosupdate/util"
 )
 
-// Author: leafsoar
-// Date: 2015-11-02 10:58:15
-//
-
 // Version 资源版本
 type Version struct {
 	Name  string // 版本名称
