@@ -12,13 +12,13 @@ import (
 	"os/signal"
 	"strings"
 
-	"github.com/leafsoar/cocosupdate/channel"
+	"cocosupdate/channel"
 
 	"github.com/codegangsta/cli"
 )
 
 // 根据源资源，生成发布资源
-func publish(address, assets, publish, name, engine string) {
+func publish(address, assets, publish, name, engine, scheme string) {
 	fmt.Println("开始生成发布资源 ...")
 	fmt.Println("资源目录: ", assets)
 	fmt.Println("发布目录: ", publish)
@@ -31,9 +31,9 @@ func publish(address, assets, publish, name, engine string) {
 		pubengine = engine
 	}
 	// 发布
-	ch.Publish("http://"+address, pubengine)
+	ch.Publish(scheme+"://"+address, pubengine)
 	fmt.Println("引擎版本: ", pubengine)
-	fmt.Printf("发布完成:  http://%s/%s\n", address, name)
+	fmt.Printf("发布完成:  "+scheme+"://%s/%s\n", address, name)
 }
 
 func startServer(port string, publish string) {
@@ -91,6 +91,11 @@ func main() {
 					Value: "3.7.1",
 					Usage: "cocos 引擎版本 (不指定时自动读取 project.manifest 值 || 3.7.1)",
 				},
+				cli.StringFlag{
+					Name:  "scheme, s",
+					Value: "http",
+					Usage: "协议类型, http 或 https, 默认 http",
+				},
 			},
 			Action: func(c *cli.Context) {
 				publish(
@@ -99,6 +104,7 @@ func main() {
 					c.String("publish"),
 					c.String("name"),
 					c.String("engine"),
+					c.String("scheme"),
 				)
 			},
 		},

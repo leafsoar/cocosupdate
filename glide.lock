@@ -1,0 +1,8 @@
+hash: 1678e46c782e978c3a31b4ccd00624eb34e8477e2e71c81d7bd07f6747597f95
+updated: 2018-01-06T20:11:03.747429784+08:00
+imports:
+- name: github.com/codegangsta/cli
+  version: cfb38830724cc34fedffe9a2a29fb54fa9169cd1
+- name: github.com/mcuadros/go-version
+  version: 88e56e02bea1c203c99222c365fa52a69996ccac
+testImports: []

@@ -3,3 +3,5 @@ run
 *.test
 publish
 cocosupdate
+/vendor/
+/.idea/

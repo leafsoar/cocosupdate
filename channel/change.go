@@ -10,8 +10,8 @@ package channel
 import (
 	"os"
 
-	"github.com/leafsoar/cocosupdate/util"
-	"github.com/leafsoar/cocosupdate/version"
+	"cocosupdate/util"
+	"cocosupdate/version"
 )
 
 // Change 版本变化
