@@ -1,0 +1,12 @@
+package: cocosupdate
+import:
+- package: github.com/codegangsta/cli
+  version: ~1.20.0
+- package: cocosupdate
+  version: ~0.3.3
+  subpackages:
+  - channel
+  - manifest
+  - util
+  - version
+- package: github.com/mcuadros/go-version

@@ -11,8 +11,8 @@ import (
 	fp "path/filepath"
 	"strings"
 
-	"github.com/leafsoar/cocosupdate/manifest"
-	"github.com/leafsoar/cocosupdate/util"
+	"cocosupdate/manifest"
+	"cocosupdate/util"
 )
 
 // Version 资源版本

@@ -9,9 +9,9 @@ import (
 	"fmt"
 	"io/ioutil"
 
-	"github.com/leafsoar/cocosupdate/manifest"
-	"github.com/leafsoar/cocosupdate/util"
-	"github.com/leafsoar/cocosupdate/version"
+	"cocosupdate/manifest"
+	"cocosupdate/util"
+	"cocosupdate/version"
 )
 
 // Channel 渠道相关数据

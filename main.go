@@ -12,7 +12,7 @@ import (
 	"os/signal"
 	"strings"
 
-	"github.com/leafsoar/cocosupdate/channel"
+	"cocosupdate/channel"
 
 	"github.com/codegangsta/cli"
 )
